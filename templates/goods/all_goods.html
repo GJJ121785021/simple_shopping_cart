@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商品页</title>
+</head>
+<body>
+
+<H2>商品列表</H2>
+<ul>
+    {% for parent in object_list %}
+        <li>{{ parent.name }}类</li>
+        {% if parent.kinds.all %}
+            <ul>
+                {% for goods in parent.kinds.all %}
+                    <li>{{ goods.name }}&nbsp;&nbsp;&nbsp;&nbsp;
+                        剩{{ goods.inventory }}件&nbsp;&nbsp;&nbsp;&nbsp;
+                        {{ goods.price }}元/件&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="{% url 'goods:add_goods' goods_id=goods.pk %}">添加</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endfor %}
+    <b>
+        <br>
+        <br>
+        <a href="{% url 'goods:clear_goods' %}">清空购物车</a>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="{% url 'goods:settle' %}">去结算</a>
+        <br>
+        <h3>购物车内的商品：</h3>
+        {% if selected_goods %}
+            {#  #}
+            {% for selected_good in selected_goods.items %}
+                <li>{{ selected_good.0.name }}:&nbsp;&nbsp;{{ selected_good.1 }}件&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="{% url 'goods:sub_goods' goods_id=selected_good.0.pk %}"><button>-</button></a>&nbsp;&nbsp;
+                    <a href="{% url 'goods:add_goods' goods_id=selected_good.0.pk %}"><button>+</button></a>
+                </li>
+            {% endfor %}
+        {% else %}
+            您还没有选择商品
+        {% endif %}
+    </b>
+</ul>
+
+
+</body>
+</html>

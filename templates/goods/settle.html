@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>结算页面</title>
+    <script type="text/javascript">
+
+        var phoneWidth = parseInt(window.screen.width);
+
+        var phoneScale = phoneWidth / 640;
+
+        var ua = navigator.userAgent;
+
+        if (/Android (d+.d+)/.test(ua)) {
+            var version = parseFloat(RegExp.$1);
+
+            if (version > 2.3) {
+                document.write('<meta name="viewport" content="width=640, minimum-scale = ‘+phoneScale+‘, maximum-scale = ‘+phoneScale+‘, target-densitydpi=device-dpi">');
+            } else {
+                document.write('<meta name="viewport" content="width=640, target-densitydpi=device-dpi">');
+            }
+
+        else
+            {
+                document.write('<meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi">');
+            }
+
+    </script>
+</head>
+<body>
+
+
+<br>
+{% if not_enough_goods %}
+    <h3>订单提交失败：</h3>
+    {% for goods in not_enough_goods %}
+        <li>{{ goods.name }}&nbsp;剩余{{ goods.inventory }}件</li>
+    {% endfor %}
+    <a href="{% url 'goods:all_goods' %}">
+        <button>返回修改</button>
+    </a>
+{% else %}
+    <h3>结算清单：</h3>
+    {% if selected_goods %}
+        {% for selected_good in selected_goods.items %}
+            <li>{{ selected_good.0.name }}:&nbsp;&nbsp;单价{{ selected_good.0.price }}元&nbsp;&nbsp;共{{ selected_good.1 }}件&nbsp;&nbsp;
+                共{% widthratio selected_good.0.price 1 selected_good.1 %}元
+            </li>
+        {% endfor %}
+        总计{{ total }}元
+        <br>
+        <br>
+        <b>请您尽快支付，否则商品可能被人抢走哦</b>
+        <br>
+
+        <form action="{% url 'goods:pay' %}" method="post">{% csrf_token %}
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button type="submit" name="pay" value="确认支付">支付</button>
+        </form>
+
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button onclick='window.location.href="{% url 'goods:all_goods' %}"'>返回继续选购</button>
+
+    {% else %}
+        您还没有选择商品， <a href="{% url 'goods:all_goods' %}">开始选购</a>
+    {% endif %}
+{% endif %}
+
+
+</body>
+</html>
