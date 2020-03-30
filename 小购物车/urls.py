@@ -25,3 +25,10 @@ urlpatterns = [
     path('favicon.ico', RedirectView.as_view(url='/static/ico1.jpg')),
     path('goods/', include('goods_app.urls')),
 ]
+
+
+from django.conf import settings
+if settings.DEBUG is False:
+    from django.views import static
+    from django.conf.urls import url
+    urlpatterns += [url(r'^static/(?P<path>.*)$', static.serve, {'document_root': settings.STATIC_ROOT}, name='static')]
